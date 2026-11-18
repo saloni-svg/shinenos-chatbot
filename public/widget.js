@@ -10,18 +10,30 @@
   var script = document.currentScript || document.querySelector('script[src*="widget.js"]');
   var origin = new URL(script.src, location.href).origin;
 
+  // Every declaration is !important and fully reset so host-site themes
+  // (e.g. Astra/Elementor button + svg styles) can't distort the widget.
   var css = [
-    "#snx-btn{position:fixed;right:20px;bottom:20px;z-index:2147483646;width:62px;height:62px;border-radius:50%;border:0;cursor:pointer;",
-    "background:linear-gradient(135deg,#001746,#002673 55%,#00358f);color:#fff;box-shadow:0 10px 30px rgba(0,23,70,.4);display:flex;align-items:center;justify-content:center;transition:transform .2s;outline:3px solid #ffa608;outline-offset:-3px}",
-    "#snx-btn:hover{transform:scale(1.06)}",
-    "#snx-btn svg{width:28px;height:28px}",
-    "#snx-tip{position:fixed;right:92px;bottom:34px;z-index:2147483646;background:#fff;color:#001746;font:500 14px/1.3 Poppins,system-ui,sans-serif;border-left:4px solid #ffa608;",
-    "padding:10px 14px;border-radius:14px;box-shadow:0 8px 24px rgba(0,0,0,.12);max-width:220px;cursor:pointer}",
-    "#snx-frame{position:fixed;right:20px;bottom:94px;z-index:2147483647;width:400px;height:640px;max-height:calc(100vh - 120px);border:0;",
+    "#snx-btn{all:initial;box-sizing:border-box;position:fixed;right:20px;bottom:20px;left:auto;top:auto;z-index:2147483646;",
+    "width:62px;height:62px;min-width:62px;min-height:62px;max-width:62px;max-height:62px;margin:0;padding:0;border:0;border-radius:50%;cursor:pointer;",
+    "background:linear-gradient(135deg,#001746,#002673 55%,#00358f);color:#fff;box-shadow:0 10px 30px rgba(0,23,70,.4);",
+    "display:flex;align-items:center;justify-content:center;line-height:1;font-size:0;text-transform:none;letter-spacing:0;",
+    "transition:transform .2s;outline:3px solid #ffa608;outline-offset:-3px;transform:none}",
+    "#snx-btn:hover,#snx-btn:focus{background:linear-gradient(135deg,#001746,#002673 55%,#00358f);color:#fff;transform:scale(1.06)}",
+    "#snx-btn svg{display:block;width:28px;height:28px;min-width:28px;max-width:28px;margin:0;padding:0;flex:0 0 28px;fill:none;stroke:#fff;overflow:visible}",
+    "#snx-btn svg *{fill:none;stroke:#fff}",
+    "#snx-tip{box-sizing:border-box;position:fixed;right:92px;bottom:34px;left:auto;top:auto;z-index:2147483646;margin:0;background:#fff;color:#001746;",
+    "font:500 14px/1.3 Poppins,system-ui,sans-serif;text-align:left;border:0;border-left:4px solid #ffa608;",
+    "padding:10px 14px;border-radius:14px;box-shadow:0 8px 24px rgba(0,0,0,.12);width:auto;max-width:220px;cursor:pointer}",
+    "#snx-frame{box-sizing:border-box;position:fixed;right:20px;bottom:94px;left:auto;top:auto;z-index:2147483647;margin:0;padding:0;",
+    "width:400px;max-width:calc(100vw - 40px);min-width:0;height:640px;max-height:calc(100vh - 120px);border:0;",
     "border-radius:18px;box-shadow:0 20px 60px rgba(15,23,42,.28);background:#fff;opacity:0;transform:translateY(16px) scale(.98);pointer-events:none;transition:opacity .2s,transform .2s}",
     "#snx-frame.open{opacity:1;transform:none;pointer-events:auto}",
-    "@media (max-width:480px){#snx-frame{right:0;bottom:0;width:100vw;height:100dvh;max-height:none;border-radius:0}#snx-frame.open+#snx-btn{display:none}}"
-  ].join("");
+    "@media (max-width:480px){#snx-frame{right:0;bottom:0;width:100vw;max-width:100vw;height:100dvh;max-height:none;border-radius:0}#snx-frame.open+#snx-btn{display:none}}"
+  ].join("")
+    // Make every declaration !important (except inside the `all:initial` reset itself).
+    .replace(/:([^;{}]+)(?=[;}])/g, function (m, v) {
+      return /!important/.test(v) || /^(hover|focus)\b/.test(v) ? m : ":" + v + "!important";
+    });
   var style = document.createElement("style");
   style.textContent = css;
   document.head.appendChild(style);

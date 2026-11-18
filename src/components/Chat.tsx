@@ -34,7 +34,6 @@ interface Saved {
 const STORAGE_KEY = "shinenos-chat-v1";
 const PHONE = "(888) 802-0420";
 const PHONE_HREF = "tel:+18888020420";
-const BOOK_URL = "https://shinenos.com/booking-service/";
 
 const STARTERS = [
   "What cleaning services do you offer?",
@@ -447,14 +446,6 @@ export default function Chat({ embedded = false }: { embedded?: boolean }) {
 
       {/* Quick actions */}
       <div className="flex flex-wrap gap-1.5 border-t border-black/5 bg-white px-4 pt-3">
-        <a
-          href={BOOK_URL}
-          target="_blank"
-          rel="noopener noreferrer"
-          className="whitespace-nowrap rounded-full border border-orange bg-orange px-2.5 py-1 text-xs font-bold text-navy hover:brightness-95"
-        >
-          📅 Book now
-        </a>
         <a href={PHONE_HREF} className="whitespace-nowrap rounded-full bg-white px-2.5 py-1 text-xs font-semibold text-brand border border-brand/25 hover:bg-soft">
           📞 {PHONE}
         </a>

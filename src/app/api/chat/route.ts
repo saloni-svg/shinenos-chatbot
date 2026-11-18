@@ -1,6 +1,6 @@
 import Anthropic from "@anthropic-ai/sdk";
 import { z } from "zod";
-import { formatHits, PAGES, searchWebsite, type SearchHit } from "@/lib/knowledge";
+import { formatHits, searchWebsite, type SearchHit } from "@/lib/knowledge";
 import { LeadSchema, leadLabel, saveLead, type Lead } from "@/lib/leads";
 import { upsertMondayLead } from "@/lib/monday";
 import { notifyLeadByEmail } from "@/lib/notify";
@@ -92,26 +92,10 @@ function rateLimited(ip: string): boolean {
 type Event =
   | { t: "status"; v: string }
   | { t: "text"; v: string }
-  | { t: "sources"; v: { url: string; title: string }[] }
   | { t: "followups"; v: string[] }
   | { t: "lead"; v: { name: string; token: string | null; lead: Lead } }
   | { t: "error"; v: string }
   | { t: "done" };
-
-const titleByUrl = new Map(PAGES.map((p) => [p.url.replace(/\/$/, ""), p.title]));
-titleByUrl.set("https://shinenos.com/booking-service", "Book online / instant quote");
-titleByUrl.set("https://shinenos.com", "SHINENOS home");
-
-function extractSources(answer: string): { url: string; title: string }[] {
-  const urls = new Set<string>();
-  for (const m of answer.matchAll(/https?:\/\/(?:www\.)?shinenos\.com[^\s)\]"'<>]*/g)) {
-    urls.add(m[0].replace(/[.,;:!?]+$/, ""));
-  }
-  return [...urls].slice(0, 5).map((url) => ({
-    url,
-    title: titleByUrl.get(url.replace(/\/$/, "")) ?? url.replace(/^https?:\/\/(www\.)?/, ""),
-  }));
-}
 
 function buildRetrievalQuery(msgs: z.infer<typeof BodySchema>["messages"]): string {
   // Include the previous user turn so short follow-ups ("and in Edina?") still retrieve well.
@@ -309,8 +293,6 @@ export async function POST(req: Request) {
           answer += rest;
           send({ t: "text", v: rest });
         }
-        const sources = extractSources(answer);
-        if (sources.length) send({ t: "sources", v: sources });
         if (followups.length) send({ t: "followups", v: followups });
         send({ t: "done" });
       } catch (err) {

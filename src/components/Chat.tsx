@@ -11,7 +11,6 @@ interface Msg {
   id: string;
   role: Role;
   content: string;
-  sources?: { url: string; title: string }[];
   followups?: string[];
   error?: boolean;
   lead?: boolean;
@@ -175,9 +174,6 @@ export default function Chat({ embedded = false }: { embedded?: boolean }) {
                 break;
               case "status":
                 setStatus(ev.v);
-                break;
-              case "sources":
-                patch((m) => ({ ...m, sources: ev.v }));
                 break;
               case "followups":
                 patch((m) => ({ ...m, followups: ev.v }));
@@ -354,11 +350,16 @@ export default function Chat({ embedded = false }: { embedded?: boolean }) {
                       <ReactMarkdown
                         remarkPlugins={[remarkGfm]}
                         components={{
-                          a: ({ href, children }) => (
-                            <a href={href} target="_blank" rel="noopener noreferrer">
-                              {children}
-                            </a>
-                          ),
+                          // Don't show which website page an answer came from: links to
+                          // shinenos.com pages render as plain text, except the booking page.
+                          a: ({ href, children }) =>
+                            href && /^https?:\/\/(www\.)?shinenos\.com/i.test(href) && !/booking-service/i.test(href) ? (
+                              <>{children}</>
+                            ) : (
+                              <a href={href} target="_blank" rel="noopener noreferrer">
+                                {children}
+                              </a>
+                            ),
                         }}
                       >
                         {m.content}

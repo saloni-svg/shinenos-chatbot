@@ -253,7 +253,7 @@ export default function Chat({ embedded = false }: { embedded?: boolean }) {
       setKnownLead((prev) => ({
         ...prev,
         name: f.name,
-        phone: f.phone || prev.phone,
+        phone: f.phone,
         email: f.email,
         service: f.service,
         address: f.address,
@@ -268,7 +268,7 @@ export default function Chat({ embedded = false }: { embedded?: boolean }) {
           role: "assistant",
           lead: true,
           // Kept in the history so the AI knows the quote request was submitted.
-          content: `Thanks, **${f.name}**! Your quote request for **${f.service}** at **${f.address}** has been sent to the SHINENOS team. They'll contact you at ${f.phone ? `${f.phone} or ${f.email}` : f.email}. Anything else I can help with meanwhile?`,
+          content: `Thanks, **${f.name}**! Your quote request for **${f.service}** at **${f.address}** has been sent to the SHINENOS team. They'll contact you at ${f.phone} or ${f.email}. Anything else I can help with meanwhile?`,
         },
       ]);
       return { ok: true };

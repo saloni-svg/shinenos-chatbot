@@ -9,6 +9,7 @@ export interface QuoteFields {
   service: string;
   address: string;
   preferred_date: string;
+  sqft: string;
   home_size: string;
   notes: string;
 }
@@ -20,6 +21,7 @@ export const EMPTY_QUOTE: QuoteFields = {
   service: "",
   address: "",
   preferred_date: "",
+  sqft: "",
   home_size: "",
   notes: "",
 };
@@ -37,10 +39,13 @@ const SERVICES = [
 function validate(f: QuoteFields): Partial<Record<keyof QuoteFields, string>> {
   const e: Partial<Record<keyof QuoteFields, string>> = {};
   if (!f.name.trim()) e.name = "Name is required";
-  if (f.phone.trim() && f.phone.replace(/\D/g, "").length < 7) e.phone = "Enter a valid phone number";
+  if (!f.phone.trim()) e.phone = "Phone is required";
+  else if (f.phone.replace(/\D/g, "").length < 7) e.phone = "Enter a valid phone number";
   if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(f.email.trim())) e.email = "Enter a valid email";
   if (!f.service) e.service = "Choose a service";
   if (!f.address.trim()) e.address = "Address is required";
+  if (!f.sqft.trim()) e.sqft = "Square footage is required";
+  else if (!/^\d[\d,]*(\.\d+)?$/.test(f.sqft.trim()) || Number(f.sqft.replace(/,/g, "")) <= 0) e.sqft = "Enter a number, e.g. 1800";
   return e;
 }
 
@@ -117,7 +122,7 @@ export default function QuoteForm({
           {err("name")}
         </div>
         <div>
-          <label className={label} htmlFor="q-phone">Phone {opt}</label>
+          <label className={label} htmlFor="q-phone">Phone {req}</label>
           <input id="q-phone" className={field("phone")} value={f.phone} onChange={set("phone")} type="tel" autoComplete="tel" maxLength={40} />
           {err("phone")}
         </div>
@@ -136,6 +141,19 @@ export default function QuoteForm({
             {f.service && !SERVICES.includes(f.service) && <option>{f.service}</option>}
           </select>
           {err("service")}
+        </div>
+        <div>
+          <label className={label} htmlFor="q-sqft">Square footage (sq ft) {req}</label>
+          <input
+            id="q-sqft"
+            className={field("sqft")}
+            value={f.sqft}
+            onChange={set("sqft")}
+            inputMode="numeric"
+            placeholder="e.g. 1800"
+            maxLength={12}
+          />
+          {err("sqft")}
         </div>
         <div className="sm:col-span-2">
           <label className={label} htmlFor="q-address">Address {req}</label>

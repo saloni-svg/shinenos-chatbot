@@ -30,12 +30,18 @@ export const QuoteFormSchema = z.object({
   phone: z
     .string()
     .trim()
+    .min(1, "Phone is required")
     .max(40)
-    .refine((v) => v === "" || v.replace(/\D/g, "").length >= 7, "Enter a valid phone number")
-    .optional(),
+    .refine((v) => v.replace(/\D/g, "").length >= 7, "Enter a valid phone number"),
   email: z.string().trim().email("Enter a valid email").max(200),
   service: z.string().trim().min(1, "Choose a service").max(200),
   address: z.string().trim().min(1, "Address is required").max(300),
+  sqft: z
+    .string()
+    .trim()
+    .min(1, "Square footage is required")
+    .max(12)
+    .refine((v) => /^\d[\d,]*(\.\d+)?$/.test(v) && Number(v.replace(/,/g, "")) > 0, "Enter a number, e.g. 1800"),
   preferred_date: z.string().trim().max(120).optional(),
   home_size: z.string().trim().max(200).optional(),
   notes: z.string().trim().max(2000).optional(),

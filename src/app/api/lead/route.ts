@@ -42,12 +42,12 @@ export async function POST(req: Request) {
   const { form, conversationId, leadToken } = parsed.data;
   const lead: Lead = {
     name: form.name,
-    phone: form.phone || undefined,
+    phone: form.phone,
     email: form.email,
     service: form.service,
     address: form.address,
     preferred_date: form.preferred_date || undefined,
-    notes: [form.home_size ? `Home size: ${form.home_size}` : "", form.notes ? form.notes : "", "Submitted via quote form"]
+    notes: [`Square footage: ${form.sqft} sq ft`, form.home_size ? `Home size: ${form.home_size}` : "", form.notes ? form.notes : "", "Submitted via quote form"]
       .filter(Boolean)
       .join(". "),
   };

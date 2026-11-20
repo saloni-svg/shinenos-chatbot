@@ -11,6 +11,7 @@ export const LeadSchema = z
     city: z.string().trim().max(120).optional(),
     address: z.string().trim().max(300).optional(),
     preferred_date: z.string().trim().max(120).optional(),
+    sqft: z.string().trim().max(12).optional(),
     notes: z.string().trim().max(2000).optional(),
   })
   .refine((l) => !!(l.name && (l.email || l.phone)), {

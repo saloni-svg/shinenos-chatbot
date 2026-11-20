@@ -47,6 +47,7 @@ export async function POST(req: Request) {
     service: form.service,
     address: form.address,
     preferred_date: form.preferred_date || undefined,
+    sqft: form.sqft,
     notes: [`Square footage: ${form.sqft} sq ft`, form.home_size ? `Home size: ${form.home_size}` : "", form.notes ? form.notes : "", "Submitted via quote form"]
       .filter(Boolean)
       .join(". "),
